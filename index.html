@@ -615,9 +615,43 @@
                     </div>
                 </div>
 
-                <!-- Bảng 2: Tồn Kho & Cost -->
+                <!-- Bảng: Chi Phí Nhân Sự (Lương) -->
                 <div>
-                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2 bg-yellow-100/60 inline-block px-4 py-2 rounded-lg border border-yellow-200 shadow-sm"><i class="fas fa-boxes text-indigo-600"></i> 2. BẢNG BIẾN ĐỘNG NGUYÊN LIỆU & TỒN KHO HỆ THỐNG THÁNG 07/2026</h4>
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2 bg-yellow-100/60 inline-block px-4 py-2 rounded-lg border border-yellow-200 shadow-sm"><i class="fas fa-users text-indigo-600"></i> 2. CHI PHÍ NHÂN SỰ & TỶ LỆ (%/DOANH THU) THÁNG 07/2026</h4>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <table class="min-w-full text-sm text-center">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="text-left font-bold text-slate-700 uppercase">Tháng 7</th>
+                                    <th class="font-bold text-orange-600 uppercase">Trần Huy Liệu</th>
+                                    <th class="font-bold text-green-600 uppercase">Lê Quang Định</th>
+                                    <th class="font-bold text-blue-600 uppercase">40 Trường Sa</th>
+                                    <th class="font-bold text-slate-900 bg-slate-100 uppercase">TỔNG HỆ THỐNG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="text-left font-medium text-slate-700">Chi phí nhân sự (Lương)</td>
+                                    <td class="font-medium text-slate-800">22.915.593 đ</td>
+                                    <td class="font-medium text-slate-800">23.487.590 đ</td>
+                                    <td class="font-medium text-slate-800">46.098.082 đ</td>
+                                    <td class="font-bold text-slate-900 bg-slate-50">92.501.265 đ</td>
+                                </tr>
+                                <tr class="bg-violet-50 font-bold border-t-2 border-violet-200">
+                                    <td class="text-left text-slate-900 uppercase">Tỷ lệ % Nhân Sự</td>
+                                    <td class="text-violet-600">16,41%</td>
+                                    <td class="text-violet-600">21,76%</td>
+                                    <td class="text-violet-600">20,82%</td>
+                                    <td class="text-violet-700 text-base bg-violet-100/70">19,72%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bảng 3: Tồn Kho & Cost -->
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2 bg-yellow-100/60 inline-block px-4 py-2 rounded-lg border border-yellow-200 shadow-sm"><i class="fas fa-boxes text-indigo-600"></i> 3. BẢNG BIẾN ĐỘNG NGUYÊN LIỆU & TỒN KHO HỆ THỐNG THÁNG 07/2026</h4>
                     <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
                         <table class="min-w-full text-sm text-center">
                             <thead class="bg-slate-50">
@@ -662,6 +696,82 @@
                         </table>
                     </div>
                 </div>
+                
+                <!-- Bảng 4: Cost Hoàn Hảo (MỚI) -->
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2 bg-yellow-100/60 inline-block px-4 py-2 rounded-lg border border-yellow-200 shadow-sm"><i class="fas fa-magic text-indigo-600"></i> 4. PHÂN TÍCH TỶ LỆ COST NGUYÊN LIỆU HOÀN HẢO THÁNG 07/2026</h4>
+                    <p class="text-sm text-slate-600 mb-4 italic px-2">* Tỷ lệ Cost Hoàn Hảo = (Giá trị Nguyên Liệu Đã Sử Dụng) / (Tổng Doanh Thu Thực Tế + Chi Phí App + CTKM + Thu Hồi Kho).</p>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <table class="min-w-full text-sm text-center">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="text-left font-bold text-slate-700 uppercase">Hạng Mục Khôi Phục</th>
+                                    <th class="font-bold text-orange-600 uppercase">Trần Huy Liệu</th>
+                                    <th class="font-bold text-green-600 uppercase">Lê Quang Định</th>
+                                    <th class="font-bold text-blue-600 uppercase">40 Trường Sa</th>
+                                    <th class="font-bold text-slate-900 bg-slate-100 uppercase">TỔNG HỆ THỐNG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="text-left font-medium text-slate-700">Giá trị NL đã sử dụng <span class="text-[10px] font-normal text-slate-400 block">(Tồn đầu + Nhập - Tồn cuối)</span></td>
+                                    <td class="text-slate-800">67.764.745 đ</td>
+                                    <td class="text-slate-800">56.729.239 đ</td>
+                                    <td class="text-slate-800">113.269.259 đ</td>
+                                    <td class="font-bold text-slate-900 bg-slate-50">237.763.243 đ</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="text-left font-medium text-slate-700">Tổng Doanh Thu Thực Tế</td>
+                                    <td class="text-slate-600">139.652.787 đ</td>
+                                    <td class="text-slate-600">107.948.790 đ</td>
+                                    <td class="text-slate-600">221.436.451 đ</td>
+                                    <td class="font-medium bg-slate-50">469.038.028 đ</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors text-xs text-slate-500">
+                                    <td class="text-left pl-6">+ Chi phí trả cho App</td>
+                                    <td>23.147.078 đ</td>
+                                    <td>30.442.324 đ</td>
+                                    <td>54.712.041 đ</td>
+                                    <td class="bg-slate-50">108.301.443 đ</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors text-xs text-slate-500">
+                                    <td class="text-left pl-6">+ Chi phí CTKM / Đổi điểm</td>
+                                    <td>4.863.000 đ</td>
+                                    <td>258.000 đ</td>
+                                    <td>1.523.000 đ</td>
+                                    <td class="bg-slate-50">6.644.000 đ</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors text-xs text-slate-500">
+                                    <td class="text-left pl-6">+ Giá trị kho giảm do thu hồi</td>
+                                    <td>2.867.000 đ</td>
+                                    <td>250.000 đ</td>
+                                    <td>0 đ</td>
+                                    <td class="bg-slate-50">3.117.000 đ</td>
+                                </tr>
+                                <tr class="bg-emerald-50/50 font-semibold border-t border-emerald-100">
+                                    <td class="text-left text-emerald-800 uppercase">= DOANH THU HOÀN HẢO</td>
+                                    <td class="text-emerald-700">170.529.865 đ</td>
+                                    <td class="text-emerald-700">138.899.114 đ</td>
+                                    <td class="text-emerald-700">277.671.492 đ</td>
+                                    <td class="text-emerald-800 font-bold bg-emerald-100/50">587.100.471 đ</td>
+                                </tr>
+                                <tr class="bg-sky-100/60 font-black border-t-2 border-sky-300 shadow-sm text-lg">
+                                    <td class="text-left text-sky-900 uppercase py-4">TỶ LỆ COST LÝ TƯỞNG</td>
+                                    <td class="text-sky-700 py-4">39,74%</td>
+                                    <td class="text-sky-700 py-4">40,84%</td>
+                                    <td class="text-sky-700 py-4">40,79%</td>
+                                    <td class="text-blue-700 text-xl bg-sky-200/50 py-4">40,50%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 bg-white p-4 rounded-xl border border-sky-200 shadow-sm flex items-start gap-3">
+                        <i class="fas fa-lightbulb text-amber-500 text-xl mt-1"></i>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            <strong>Đánh giá nhanh:</strong> Nếu không bị bào mòn bởi chi phí nền tảng (App) và các chương trình kích cầu, tỷ lệ Cost (giá vốn nguyên liệu) thực tế của toàn hệ thống sẽ ở mức <strong>~40,50%</strong> (giảm hơn 10% so với cost thực tế hiện tại là 50,69%). Đây là một chỉ số quan trọng để đánh giá biên độ lợi nhuận gộp lõi (Gross Margin) của sản phẩm.
+                        </p>
+                    </div>
+                </div>
             </div>
         </section>
         <!-- KẾT THÚC THÊM MỚI -->
@@ -695,9 +805,24 @@
                         </div>
                     </div>
 
+                    <!-- Nhân Sự -->
+                    <div>
+                        <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-users text-slate-400"></i> 2. Chi Phí Nhân Sự</h4>
+                        <div class="bg-white rounded-xl p-4 border border-slate-200 text-sm shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-600 font-medium mb-1">Tổng chi trả lương:</p>
+                                <p class="text-lg font-bold text-slate-800">46.098.082 đ</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-slate-500 text-xs mb-1">Tỷ lệ (% Doanh thu)</p>
+                                <span class="inline-block px-3 py-1 bg-violet-100 text-violet-700 font-bold rounded-lg border border-violet-200">20,82%</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Tồn Kho & Tỷ lệ Cost -->
                     <div>
-                        <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-boxes text-slate-400"></i> 2. Biến Động Nguyên Liệu & Tồn Kho</h4>
+                        <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-boxes text-slate-400"></i> 3. Biến Động Nguyên Liệu & Tồn Kho</h4>
                         <div class="bg-white rounded-xl p-4 border border-slate-200 text-sm shadow-sm">
                             <table class="w-full text-left">
                                 <tbody>
@@ -773,9 +898,24 @@
                         </div>
                     </div>
 
+                    <!-- Nhân Sự -->
+                    <div>
+                        <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-users text-slate-400"></i> 2. Chi Phí Nhân Sự</h4>
+                        <div class="bg-white rounded-xl p-4 border border-slate-200 text-sm shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-600 font-medium mb-1">Tổng chi trả lương:</p>
+                                <p class="text-lg font-bold text-slate-800">22.915.593 đ</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-slate-500 text-xs mb-1">Tỷ lệ (% Doanh thu)</p>
+                                <span class="inline-block px-3 py-1 bg-violet-100 text-violet-700 font-bold rounded-lg border border-violet-200">16,41%</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Tồn Kho & Tỷ lệ Cost -->
                     <div>
-                        <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-boxes text-slate-400"></i> 2. Biến Động Nguyên Liệu & Tồn Kho</h4>
+                        <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-boxes text-slate-400"></i> 3. Biến Động Nguyên Liệu & Tồn Kho</h4>
                         <div class="bg-white rounded-xl p-4 border border-slate-200 text-sm shadow-sm">
                             <table class="w-full text-left">
                                 <tbody>
@@ -859,10 +999,25 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Nhân Sự -->
+                        <div>
+                            <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-users text-slate-400"></i> 2. Chi Phí Nhân Sự</h4>
+                            <div class="bg-white rounded-xl p-4 border border-slate-200 text-sm shadow-sm flex items-center justify-between">
+                                <div>
+                                    <p class="text-slate-600 font-medium mb-1">Tổng chi trả lương:</p>
+                                    <p class="text-lg font-bold text-slate-800">23.487.590 đ</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-slate-500 text-xs mb-1">Tỷ lệ (% Doanh thu)</p>
+                                    <span class="inline-block px-3 py-1 bg-violet-100 text-violet-700 font-bold rounded-lg border border-violet-200">21,76%</span>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Tồn Kho & Tỷ lệ Cost -->
                         <div>
-                            <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-boxes text-slate-400"></i> 2. Biến Động Nguyên Liệu & Tồn Kho</h4>
+                            <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-boxes text-slate-400"></i> 3. Biến Động Nguyên Liệu & Tồn Kho</h4>
                             <div class="bg-white rounded-xl p-4 border border-slate-200 text-sm shadow-sm">
                                 <table class="w-full text-left">
                                     <tbody>
