@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Doanh Thu Hệ Thống AppFood</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+
+        /* Custom Table Styling */
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        th {
+            background-color: #f1f5f9; /* slate-100 */
+            color: #475569; /* slate-600 */
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+        }
+        
+        tr:last-child td { border-bottom: none; }
+        
+        tr:hover td { background-color: #f8fafc; transition: background-color 0.2s; }
+
+        .total-row td {
+            font-weight: 700;
+            background-color: #fffbeb; /* amber-50 */
+            color: #b45309; /* amber-700 */
+            border-top: 2px solid #fcd34d; /* amber-300 */
+        }
+
+        .total-row:hover td { background-color: #fef3c7; }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border-radius: 1.5rem;
+        }
+
+        /* Abstract Background Elements */
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen pb-12 selection:bg-blue-200 selection:text-blue-900 overflow-x-hidden">
+
+<div class="bg-blob bg-blue-200 w-[500px] h-[500px] top-[-100px] left-[-100px]"></div>
+<div class="bg-blob bg-purple-200 w-[400px] h-[400px] top-[20%] right-[-100px]"></div>
+<div class="bg-blob bg-amber-100 w-[600px] h-[600px] bottom-[-200px] left-[20%]"></div>
+
+<div class="max-w-7xl mx-auto space-y-8 relative z-10 px-4 sm:px-6 lg:px-8 pt-10">
+    
+    <header class="text-center animate-fade-in-up mb-10">
+        <div class="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm border border-slate-100 mb-4">
+            <i class="fas fa-chart-line text-3xl text-blue-600 mr-3"></i>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600 uppercase tracking-tight">
+                Báo Cáo Doanh Thu & Vận Hành
+            </h1>
+        </div>
+        <p class="text-lg text-slate-600/80 font-medium"><i class="far fa-calendar-alt mr-2"></i>Tháng 4 - Tháng 7 / 2026 | Hệ thống 3 Chi Nhánh</p>
+    </header>
+
+    <div class="flex justify-center animate-fade-in-up delay-100 mb-8">
+        <div class="bg-white p-1.5 rounded-2xl inline-flex flex-wrap justify-center shadow-sm border border-slate-200 gap-1">
+            <button onclick="switchTab('online')" id="tabOnlineBtn" class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 bg-blue-600 text-white shadow-md shadow-blue-600/20 flex items-center gap-2">
+                <i class="fas fa-mobile-screen"></i> DOANH THU ONLINE
+            </button>
+            <button onclick="switchTab('offline')" id="tabOfflineBtn" class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center gap-2">
+                <i class="fas fa-store"></i> DOANH THU OFFLINE
+            </button>
+            <button onclick="switchTab('cost')" id="tabCostBtn" class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center gap-2">
+                <i class="fas fa-file-invoice-dollar"></i> CHI PHÍ & VẬN HÀNH
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== TAB ONLINE ==================== -->
+    <div id="tabOnline" class="space-y-8 transition-all duration-500 opacity-100">
+        
+        <section class="glass-card p-6 xl:p-8 animate-fade-in-up delay-100 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-bl-[100px] -z-10 transition-transform duration-700 group-hover:scale-110"></div>
+            
+            <div class="flex flex-col md:flex-row items-center justify-between mb-8 border-b border-slate-100 pb-4">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 mr-4">
+                        <i class="fas fa-globe text-xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800 tracking-tight">TỔNG QUAN ONLINE (4 APP)</h2>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+                <!-- Bảng Dữ Liệu -->
+                <div class="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-white">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm whitespace-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>Chi Nhánh</th>
+                                    <th>Tháng 4</th>
+                                    <th>Tháng 5</th>
+                                    <th>Tháng 6</th>
+                                    <th>Tháng 7</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-semibold text-blue-700"><i class="fas fa-map-marker-alt mr-2 text-blue-400"></i>40 Trường Sa</td>
+                                    <td>99.457.740 đ</td>
+                                    <td>89.231.253 đ</td>
+                                    <td>87.864.753 đ</td>
+                                    <td class="font-medium text-slate-900">98.391.452 đ</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-semibold text-orange-600"><i class="fas fa-map-marker-alt mr-2 text-orange-400"></i>Trần Huy Liệu</td>
+                                    <td>47.353.037 đ</td>
+                                    <td>52.650.112 đ</td>
+                                    <td>48.903.189 đ</td>
+                                    <td class="font-medium text-slate-900">47.785.678 đ</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-semibold text-green-600"><i class="fas fa-map-marker-alt mr-2 text-green-400"></i>Lê Quang Định</td>
+                                    <td>71.769.917 đ</td>
+                                    <td>65.857.516 đ</td>
+                                    <td>78.382.395 đ</td>
+                                    <td class="font-medium text-slate-900">79.829.790 đ</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td><i class="fas fa-chart-pie mr-2"></i>TỔNG ONLINE</td>
+                                    <td>218.580.694 đ</td>
+                                    <td>207.738.880 đ</td>
+                                    <td>215.150.337 đ</td>
+                                    <td class="text-red-600 font-extrabold text-base border-l border-amber-200">226.006.920 đ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Biểu Đồ -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative h-[350px] flex items-center justify-center">
+                    <canvas id="overviewChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card p-6 xl:p-8 animate-fade-in-up delay-200">
+            <h2 class="text-xl font-bold mb-6 text-slate-800 flex items-center gap-2">
+                <i class="fas fa-search-chart text-indigo-500 bg-indigo-50 p-2 rounded-lg"></i>
+                Phân Tích Chi Tiết Tổng Quan
+            </h2>
+            
+            <div class="bg-blue-50/50 rounded-xl p-5 mb-6 border border-blue-100">
+                <p class="text-slate-700 text-lg">
+                    Tổng doanh thu từ 4 nền tảng APPFOOD của toàn hệ thống trong tháng 7 vừa qua đã chính thức cán mốc <strong class="text-red-600 text-xl bg-red-50 px-2 py-0.5 rounded border border-red-100">226.006.920 đ</strong>, đánh dấu sự phục hồi và tăng trưởng bùng nổ.
+                </p>
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 text-sm font-medium text-slate-600 shadow-sm"><i class="fas fa-arrow-up text-green-500"></i> vs T.4: +7.426.226 đ</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 text-sm font-medium text-slate-600 shadow-sm"><i class="fas fa-arrow-up text-green-500"></i> vs T.5: +18.268.040 đ</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 text-sm font-medium text-slate-600 shadow-sm"><i class="fas fa-arrow-up text-green-500"></i> vs T.6: +10.856.583 đ</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="w-1 h-full bg-blue-500 absolute left-0 top-0"></div>
+                    <h3 class="font-bold text-blue-700 mb-2 flex items-center gap-2"><i class="fas fa-map-pin"></i> 40 Trường Sa</h3>
+                    <ul class="text-sm text-slate-600 space-y-2">
+                        <li><i class="fas fa-check text-green-500 mr-1"></i> Biểu đồ tạo thành mô hình <strong>chữ V</strong> rõ nét.</li>
+                        <li><i class="fas fa-check text-green-500 mr-1"></i> Có cú "bật nhảy" ấn tượng vào tháng 7 (tăng vọt >10tr), quay sát mức đỉnh T.4.</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="w-1 h-full bg-green-500 absolute left-0 top-0"></div>
+                    <h3 class="font-bold text-green-700 mb-2 flex items-center gap-2"><i class="fas fa-map-pin"></i> Lê Quang Định</h3>
+                    <ul class="text-sm text-slate-600 space-y-2">
+                        <li><i class="fas fa-rocket text-orange-500 mr-1"></i> <strong>Gia tốc tăng trưởng tốt nhất</strong> nửa cuối biểu đồ.</li>
+                        <li><i class="fas fa-check text-green-500 mr-1"></i> Tăng tốc cực mạnh từ T.6 và lập <strong>đỉnh mới</strong> vào T.7 (79.8tr). Chiến dịch đi đúng hướng.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="w-1 h-full bg-orange-500 absolute left-0 top-0"></div>
+                    <h3 class="font-bold text-orange-700 mb-2 flex items-center gap-2"><i class="fas fa-map-pin"></i> Trần Huy Liệu</h3>
+                    <ul class="text-sm text-slate-600 space-y-2">
+                        <li><i class="fas fa-exchange-alt text-slate-400 mr-1"></i> Xu hướng chính là <strong>sideway (đi ngang)</strong> (47-52tr).</li>
+                        <li><i class="fas fa-exclamation-triangle text-amber-500 mr-1"></i> T.7 giảm nhẹ do yếu tố khách quan (gián đoạn setup, đóng cửa). Đủ công suất sẽ duy trì đà tăng.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card p-6 animate-fade-in-up delay-300">
+            <div class="flex flex-wrap items-center justify-between mb-6 gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg"><i class="fas fa-store"></i></div>
+                    <h2 class="text-xl font-bold text-slate-800 uppercase">Chi Nhánh Trường Sa</h2>
+                </div>
+                <button onclick="toggleChart('chartWrapperTruongSa', 'btnTruongSa')" id="btnTruongSa" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 border border-slate-200">
+                    <i class="fas fa-chart-area"></i> Xem Biểu Đồ
+                </button>
+            </div>
+            
+            <div class="w-full overflow-x-auto rounded-xl border border-slate-200 mb-4 bg-white shadow-sm">
+                <table class="min-w-full text-sm whitespace-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Nguồn Đơn</th>
+                            <th>Tháng 4</th>
+                            <th>Tháng 5</th>
+                            <th>Tháng 6</th>
+                            <th>Tháng 7</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-semibold text-orange-600">ShopeeFood</td>
+                            <td>32.328.194 đ</td>
+                            <td>30.366.100 đ</td>
+                            <td>31.306.151 đ</td>
+                            <td>30.635.042 đ</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-blue-600">GrabFood</td>
+                            <td>51.609.874 đ</td>
+                            <td>42.098.558 đ</td>
+                            <td>41.361.222 đ</td>
+                            <td>49.063.169 đ</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-amber-500">BeFood</td>
+                            <td>13.211.184 đ</td>
+                            <td>11.515.202 đ</td>
+                            <td>8.710.382 đ</td>
+                            <td>11.695.863 đ</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-cyan-600">Xanh SM</td>
+                            <td>2.308.488 đ</td>
+                            <td>5.251.393 đ</td>
+                            <td>6.486.998 đ</td>
+                            <td>7.399.378 đ</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>TỔNG ONLINE</td>
+                            <td>99.457.740 đ</td>
+                            <td>89.231.253 đ</td>
+                            <td>87.864.753 đ</td>
+                            <td class="text-slate-900 font-bold border-l border-amber-200">98.391.452 đ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="chartWrapperTruongSa" class="hidden overflow-hidden transition-all duration-500">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner mt-2 h-[400px] flex items-center justify-center">
+                    <canvas id="truongSaChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card p-6 animate-fade-in-up delay-300">
+            <div class="flex flex-wrap items-center justify-between mb-6 gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-lg"><i class="fas fa-store"></i></div>
+                    <h2 class="text-xl font-bold text-slate-800 uppercase">Chi Nhánh Trần Huy Liệu</h2>
+                </div>
+                <button onclick="toggleChart('chartWrapperTHL', 'btnTHL')" id="btnTHL" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 border border-slate-200">
+                    <i class="fas fa-chart-area"></i> Xem Biểu Đồ
+                </button>
+            </div>
+            
+            <div class="w-full overflow-x-auto rounded-xl border border-slate-200 mb-4 bg-white shadow-sm">
+                <table class="min-w-full text-sm whitespace-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Nguồn Đơn</th>
+                            <th>Tháng 4</th>
+                            <th>Tháng 5</th>
+                            <th>Tháng 6</th>
+                            <th>Tháng 7</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-semibold text-orange-600">ShopeeFood</td>
+                            <td>20.899.153 đ</td>
+                            <td>30.601.819 đ</td>
+                            <td>25.729.430 đ</td>
+                            <td>24.452.663 đ</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-blue-600">GrabFood</td>
+                            <td>19.687.445 đ</td>
+                            <td>15.458.833 đ</td>
+                            <td>15.282.880 đ</td>
+                            <td>15.045.000 đ</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-amber-500">BeFood</td>
+                            <td>4.318.424 đ</td>
+                            <td>4.105.865 đ</td>
+                            <td>3.845.814 đ</td>
+                            <td>4.447.638 đ</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-cyan-600">Xanh SM</td>
+                            <td>2.448.015 đ</td>
+                            <td>2.483.595 đ</td>
+                            <td>4.045.065 đ</td>
+                            <td>4.144.622 đ</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>TỔNG ONLINE</td>
+                            <td>47.353.037 đ</td>
+                            <td>52.650.112 đ</td>
+                            <td>48.903.189 đ</td>
+                            <td class="text-slate-900 font-bold border-l border-amber-200">48.089.923 đ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="chartWrapperTHL" class="hidden overflow-hidden transition-all duration-500">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner mt-2 h-[400px] flex items-center justify-center">
+                    <canvas id="thlChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card p-6 animate-fade-in-up delay-300">
+            <div class="flex flex-wrap items-center justify-between mb-6 gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-lg"><i class="fas fa-store"></i></div>
+                    <h2 class="text-xl font-bold text-slate-800 uppercase">Chi Nhánh Lê Quang Định</h2>
+                </div>
+                <button onclick="toggleChart('chartWrapperLQD', 'btnLQD')" id="btnLQD" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 border border-slate-200">
+                    <i class="fas fa-chart-area"></i> Xem Biểu Đồ
+                </button>
+            </div>
+            
+            <div class="w-full overflow-x-auto rounded-xl border border-slate-200 mb-4 bg-white shadow-sm">
+                <table class="min-w-full text-sm whitespace-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Nguồn Đơn</th>
+                            <th>Tháng 4</th>
+                            <th>Tháng 5</th>
+                            <th>Tháng 6</th>
+                            <th>Tháng 7</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-semibold text-orange-600">ShopeeFood</td>
+                            <td>24.876.207 đ</td>
+                            <td>26.286.966 đ</td>
+                            <td>23.862.386 đ</td>
+                            <td>22.146.486 đ</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-blue-600">GrabFood</td>
+                            <td>40.360.126 đ</td>
+                            <td>33.310.552 đ</td>
+                            <td>46.876.849 đ</td>
+                            <td>50.181.460 đ</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-amber-500">BeFood</td>
+                            <td>4.566.084 đ</td>
+                            <td>3.021.825 đ</td>
+                            <td>3.472.597 đ</td>
+                            <td>3.956.870 đ</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-cyan-600">Xanh SM</td>
+                            <td>1.967.500 đ</td>
+                            <td>3.238.173 đ</td>
+                            <td>4.170.563 đ</td>
+                            <td>3.643.375 đ</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>TỔNG ONLINE</td>
+                            <td>71.769.917 đ</td>
+                            <td>65.857.516 đ</td>
+                            <td>78.382.395 đ</td>
+                            <td class="text-slate-900 font-bold border-l border-amber-200">79.928.191 đ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="chartWrapperLQD" class="hidden overflow-hidden transition-all duration-500">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner mt-2 h-[400px] flex items-center justify-center">
+                    <canvas id="lqdChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </div> <!-- END TAB ONLINE -->
+
+    <!-- ==================== TAB OFFLINE ==================== -->
+    <div id="tabOffline" class="space-y-8 transition-all duration-500 opacity-0 hidden">
+        
+        <section class="glass-card p-6 xl:p-8 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-bl-[100px] -z-10 transition-transform duration-700 group-hover:scale-110"></div>
+            
+            <div class="flex items-center mb-8 border-b border-slate-100/50 pb-4">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20 mr-4">
+                    <i class="fas fa-store-alt text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">TỔNG QUAN OFFLINE (TẠI QUÁN)</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+                <!-- Bảng Dữ Liệu Offline -->
+                <div class="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-white">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead>
+                                <tr>
+                                    <th>Chi Nhánh</th>
+                                    <th>Tháng 4</th>
+                                    <th>Tháng 5</th>
+                                    <th>Tháng 6</th>
+                                    <th>Tháng 7</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-semibold text-blue-700"><i class="fas fa-map-marker-alt mr-2 text-blue-400"></i>40 Trường Sa</td>
+                                    <td>139.223.000 đ</td>
+                                    <td>130.424.000 đ</td>
+                                    <td>118.689.180 đ</td>
+                                    <td class="font-medium text-slate-900">123.044.999 đ</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-semibold text-orange-600"><i class="fas fa-map-marker-alt mr-2 text-orange-400"></i>69 Trần Huy Liệu</td>
+                                    <td>87.560.100 đ</td>
+                                    <td>91.236.000 đ</td>
+                                    <td>81.759.000 đ</td>
+                                    <td class="font-medium text-slate-900">91.989.000 đ</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-semibold text-green-600"><i class="fas fa-map-marker-alt mr-2 text-green-400"></i>489 Lê Quang Định</td>
+                                    <td>41.958.000 đ</td>
+                                    <td>38.685.000 đ</td>
+                                    <td>32.116.000 đ</td>
+                                    <td class="font-medium text-slate-900">28.119.000 đ</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td><i class="fas fa-cash-register mr-2"></i>TỔNG OFFLINE</td>
+                                    <td>268.741.100 đ</td>
+                                    <td>260.345.000 đ</td>
+                                    <td>232.564.180 đ</td>
+                                    <td class="text-red-600 font-extrabold text-base border-l border-amber-200">243.152.999 đ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Biểu Đồ Offline -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative h-[350px] flex items-center justify-center">
+                    <canvas id="offlineOverviewChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card p-6 xl:p-8 bg-gradient-to-br from-amber-50 to-orange-50/50 border-orange-100">
+            <h2 class="text-xl font-bold mb-4 text-orange-800 flex items-center gap-2">
+                <div class="p-2 bg-white rounded-lg shadow-sm"><i class="fas fa-comment-dots text-orange-500"></i></div>
+                Nhận Xét Doanh Thu Quán
+            </h2>
+            <p class="mb-6 text-slate-700 leading-relaxed text-lg">
+                Tổng doanh thu Offline (phục vụ tại quán) của toàn hệ thống 3 chi nhánh trong tháng 7 vừa qua đã cán mốc <strong class="text-red-600 text-xl bg-white px-2 py-0.5 rounded border border-red-100">243.152.999 đ</strong>, đánh dấu bước ngoặt quan trọng khi dòng tiền tại cửa hàng đã <span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-semibold">bắt đầu quay trở lại</span> sau giai đoạn chững nhịp.
+            </p>
+            
+            <p class="mb-4 text-slate-600 font-medium">Nhìn lại chặng đường 4 tháng qua, bức tranh doanh thu Offline đang cho thấy sự nỗ lực lấy lại phong độ rất đáng ghi nhận:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-orange-100/50 relative overflow-hidden group">
+                    <div class="w-1 h-full bg-slate-300 absolute left-0 top-0"></div>
+                    <p class="text-sm text-slate-500 font-bold mb-1"><i class="fas fa-calendar-day mr-1"></i> So với Tháng 4</p>
+                    <p class="text-slate-400 text-xs mb-2">(268.741.100 đ)</p>
+                    <p class="font-bold text-slate-800">Còn khoảng cách <span class="text-red-500">25.588.101 đ</span></p>
+                    <p class="text-xs text-slate-500 mt-2 bg-slate-50 p-2 rounded">Hệ thống đang tăng tốc thu hẹp khoảng cách để hướng về lại mức đỉnh đầu hè.</p>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-orange-100/50 relative overflow-hidden group">
+                    <div class="w-1 h-full bg-blue-400 absolute left-0 top-0"></div>
+                    <p class="text-sm text-slate-500 font-bold mb-1"><i class="fas fa-calendar-day mr-1 text-blue-400"></i> So với Tháng 5</p>
+                    <p class="text-slate-400 text-xs mb-2">(260.345.000 đ)</p>
+                    <p class="font-bold text-slate-800">Cần nỗ lực thêm <span class="text-blue-600">17.192.001 đ</span></p>
+                    <p class="text-xs text-slate-500 mt-2 bg-slate-50 p-2 rounded">Để san bằng kỷ lục của tháng 5.</p>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-orange-100/50 relative overflow-hidden group">
+                    <div class="w-1 h-full bg-green-500 absolute left-0 top-0"></div>
+                    <p class="text-sm text-slate-500 font-bold mb-1"><i class="fas fa-calendar-day mr-1 text-green-500"></i> So với Tháng 6</p>
+                    <p class="text-slate-400 text-xs mb-2">(232.564.180 đ)</p>
+                    <p class="font-bold text-slate-800">Tăng trưởng vọt thêm <span class="text-green-600">10.588.819 đ</span></p>
+                    <p class="text-xs text-slate-500 mt-2 bg-green-50 text-green-700 p-2 rounded font-medium"><i class="fas fa-check-circle mr-1"></i>Chính thức chặn đứng đà giảm và lấy lại đà khởi sắc!</p>
+                </div>
+            </div>
+        </section>
+
+    </div> <!-- END TAB OFFLINE -->
+
+    <!-- ==================== TAB COST (CHI PHÍ & VẬN HÀNH) ==================== -->
+    <div id="tabCost" class="space-y-8 transition-all duration-500 opacity-0 hidden">
+        
+        <!-- Header Tab Cost -->
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-slate-800 tracking-tight mb-2 uppercase">Báo Cáo Tổng Hợp Kết Quả Kinh Doanh</h2>
+            <p class="text-rose-600 font-semibold bg-rose-50 inline-block px-4 py-1.5 rounded-full border border-rose-200 shadow-sm"><i class="far fa-calendar-alt mr-2"></i>Kỳ báo cáo: Tháng 07/2026</p>
+        </div>
+
+        <!-- THÊM MỚI: Phần Tổng Hợp Hệ Thống -->
+        <section class="glass-card p-6 xl:p-8 animate-fade-in-up delay-100 mb-8 border-t-4 border-t-indigo-500 shadow-lg">
+            <div class="flex items-center gap-3 mb-8 pb-4 border-b border-slate-100">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-xl shadow-md"><i class="fas fa-layer-group"></i></div>
+                <h3 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">TỔNG HỢP HỆ THỐNG THÁNG 07/2026</h3>
+            </div>
+
+            <div class="space-y-10">
+                <!-- Bảng 1: Doanh Thu -->
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2 bg-yellow-100/60 inline-block px-4 py-2 rounded-lg border border-yellow-200 shadow-sm"><i class="fas fa-chart-line text-indigo-600"></i> 1. BẢNG TỔNG QUAN DOANH THU HỆ THỐNG THÁNG 07/2026</h4>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <table class="min-w-full text-sm text-center">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="text-left font-bold text-slate-700 uppercase">Tháng 7</th>
+                                    <th class="font-bold text-orange-600 uppercase">Trần Huy Liệu</th>
+                                    <th class="font-bold text-green-600 uppercase">Lê Quang Định</th>
+                                    <th class="font-bold text-blue-600 uppercase">40 Trường Sa</th>
+                                    <th class="font-bold text-slate-900 bg-slate-100 uppercase">TỔNG HỆ THỐNG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="text-left font-medium text-slate-700">Doanh thu Online (App)</td>
+                                    <td>47.663.787 đ</td>
+                                    <td>79.829.790 đ</td>
+                                    <td>98.391.452 đ</td>
+                                    <td class="font-medium bg-slate-50 text-slate-800">225.885.029 đ</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="text-left font-medium text-slate-700">Doanh thu Offline</td>
+                                    <td>91.989.000 đ</td>
+                                    <td>28.119.000 đ</td>
+                                    <td>123.044.999 đ</td>
+                                    <td class="font-medium bg-slate-50 text-slate-800">243.152.999 đ</td>
+                                </tr>
+                                <tr class="bg-yellow-50/60 font-bold border-t-2 border-yellow-200">
+                                    <td class="text-left text-slate-900 uppercase">TỔNG DOANH THU</td>
+                                    <td class="text-orange-600">139.652.787 đ</td>
+                                    <td class="text-green-600">107.948.790 đ</td>
+                                    <td class="text-blue-600">221.436.451 đ</td>
+                                    <td class="text-red-600 text-base bg-yellow-100/50">469.038.028 đ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bảng 2: Tồn Kho & Cost -->
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2 bg-yellow-100/60 inline-block px-4 py-2 rounded-lg border border-yellow-200 shadow-sm"><i class="fas fa-boxes text-indigo-600"></i> 2. BẢNG BIẾN ĐỘNG NGUYÊN LIỆU & TỒN KHO HỆ THỐNG THÁNG 07/2026</h4>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <table class="min-w-full text-sm text-center">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="text-left font-bold text-slate-700 uppercase">Tháng 7</th>
+                                    <th class="font-bold text-orange-600 uppercase">Trần Huy Liệu</th>
+                                    <th class="font-bold text-green-600 uppercase">Lê Quang Định</th>
+                                    <th class="font-bold text-blue-600 uppercase">40 Trường Sa</th>
+                                    <th class="font-bold text-slate-900 bg-slate-100 uppercase">TỔNG HỆ THỐNG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="text-left font-medium text-slate-700">Tồn đầu kỳ (01/07/2026)</td>
+                                    <td class="text-emerald-600 font-semibold bg-emerald-50/50">34.594.014 đ</td>
+                                    <td class="text-emerald-600 font-semibold bg-emerald-50/50">36.349.530 đ</td>
+                                    <td class="text-emerald-600 font-semibold bg-emerald-50/50">38.385.646 đ</td>
+                                    <td class="text-emerald-700 font-bold bg-emerald-100/50">109.329.190 đ</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="text-left font-medium text-slate-700">Tổng Nguyên Liệu (NL)</td>
+                                    <td class="font-medium text-slate-800">67.388.789 đ</td>
+                                    <td class="font-medium text-slate-800">64.329.660 đ</td>
+                                    <td class="font-medium text-slate-800">120.855.087 đ</td>
+                                    <td class="font-bold text-slate-900 bg-slate-50">252.573.536 đ</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="text-left font-medium text-slate-700">Tồn cuối kỳ (01/08/2026)</td>
+                                    <td class="text-emerald-600 font-semibold bg-emerald-50/50">34.218.058 đ</td>
+                                    <td class="text-emerald-600 font-semibold bg-emerald-50/50">43.949.951 đ</td>
+                                    <td class="text-emerald-600 font-semibold bg-emerald-50/50">45.971.474 đ</td>
+                                    <td class="text-emerald-700 font-bold bg-emerald-100/50">124.139.483 đ</td>
+                                </tr>
+                                <tr class="bg-rose-50 font-bold border-t-2 border-rose-200">
+                                    <td class="text-left text-slate-900 uppercase">Tỷ lệ cost (%NL)</td>
+                                    <td class="text-rose-600">48,52%</td>
+                                    <td class="text-rose-600">52,50%</td>
+                                    <td class="text-rose-600">51,06%</td>
+                                    <td class="text-red-600 text-base bg-rose-100/70">50,69%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- KẾT THÚC THÊM MỚI -->
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Chi Nhánh: 40 Trường Sa -->
+            <section class="glass-card p-6 relative overflow-hidden border-t-4 border-t-blue-500 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-3 mb-6 pb-3 border-b border-slate-100">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fas fa-map-marker-alt"></i></div>
+                    <h3 class="text-xl font-bold text-slate-800 uppercase">40 Trường Sa</h3>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Tổng Quan -->
+                    <div>
+                        <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-chart-pie text-slate-400"></i> 1. Tổng Quan Doanh Thu</h4>
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-sm">
+                            <div class="flex justify-between py-2 border-b border-slate-200">
+                                <span class="text-slate-600">Doanh thu Online (App)</span>
+                                <span class="font-medium text-slate-800">98.391.452 đ</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-slate-200">
+                                <span class="text-slate-600">Doanh thu Offline</span>
+                                <span class="font-medium text-slate-800">123.044.999 đ</span>
+                            </div>
+                            <div class="flex justify-between py-2 mt-2 bg-yellow-100/50 rounded px-2 font-bold text-slate-900 border border-yellow-200">
+                                <span>TỔNG DOANH THU</span>
+                                <span class="text-blue-700">221.436.451 đ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tồn Kho & Tỷ lệ Cost -->
+                    <div>
+                        <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-boxes text-slate-400"></i> 2. Biến Động Nguyên Liệu & Tồn Kho</h4>
+                        <div class="bg-white rounded-xl p-4 border border-slate-200 text-sm shadow-sm">
+                            <table class="w-full text-left">
+                                <tbody>
+                                    <tr class="border-b border-slate-100 bg-yellow-50/50">
+                                        <td class="py-2 font-medium">Tồn đầu kỳ (01/07)</td>
+                                        <td class="py-2 text-right font-semibold text-slate-800">38.385.646 đ</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <td class="py-2 text-slate-600">Tổng Nguyên Liệu (NL)</td>
+                                        <td class="py-2 text-right font-medium text-rose-600">120.855.087 đ</td>
+                                    </tr>
+                                    <tr class="bg-yellow-50/50">
+                                        <td class="py-2 font-medium">Tồn cuối kỳ (01/08)</td>
+                                        <td class="py-2 text-right font-semibold text-slate-800">45.971.474 đ</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="mt-4 text-center p-3 bg-rose-50 border border-rose-100 rounded-lg">
+                                <span class="text-slate-700 font-semibold">Tỷ lệ cost Nguyên liệu (%NL):</span>
+                                <span class="text-xl font-bold text-rose-600 ml-2">51,06%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ghi chú Vận hành -->
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-orange-50/50 rounded-xl p-4 border border-orange-100 text-sm">
+                            <h4 class="font-semibold text-orange-800 mb-2 flex items-center gap-2"><i class="fas fa-exclamation-triangle"></i> 3. Hư Hỏng Nguyên Liệu</h4>
+                            <p class="mb-2">Tổng chi phí hao hụt (Ước tính): <strong class="text-red-600">Khoảng 1.000.000 đ</strong></p>
+                            <ul class="list-disc pl-5 text-slate-600 space-y-1 text-xs">
+                                <li><strong>Nhãn:</strong> Bị chua, sủi bọt (29/07).</li>
+                                <li><strong>Trân châu bánh bò:</strong> Nở, không dùng được (27/07, HL: 320).</li>
+                                <li><strong>Sốt khoai môn:</strong> Bị chua (23/07, HL: 201).</li>
+                                <li><strong>Hạt sen:</strong> Quá hạn (17/07) & Bị chua (20/07).</li>
+                                <li><strong>Trân châu:</strong> Quá hạn, ăn dở (17/07).</li>
+                            </ul>
+                        </div>
+                        <div class="bg-green-50/50 rounded-xl p-4 border border-green-100 text-sm">
+                            <h4 class="font-semibold text-green-800 mb-2 flex items-center gap-2"><i class="fas fa-tags"></i> 4. Chương Trình Khuyến Mãi (CTKM)</h4>
+                            <ul class="list-disc pl-5 text-slate-600 space-y-1">
+                                <li>Đổi điểm lấy voucher (1 Điểm = 1000 VNĐ).</li>
+                                <li>Tổng chi phí giảm giá: <strong class="text-slate-900">1.523.000 đ</strong> <em class="text-xs text-slate-500">(56 hóa đơn)</em></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chi Nhánh: Trần Huy Liệu -->
+            <section class="glass-card p-6 relative overflow-hidden border-t-4 border-t-orange-500 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-3 mb-6 pb-3 border-b border-slate-100">
+                    <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center"><i class="fas fa-map-marker-alt"></i></div>
+                    <h3 class="text-xl font-bold text-slate-800 uppercase">Trần Huy Liệu</h3>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Tổng Quan -->
+                    <div>
+                        <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-chart-pie text-slate-400"></i> 1. Tổng Quan Doanh Thu</h4>
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-sm">
+                            <div class="flex justify-between py-2 border-b border-slate-200">
+                                <span class="text-slate-600">Doanh thu Online (App)</span>
+                                <span class="font-medium text-slate-800">47.663.787 đ</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-slate-200">
+                                <span class="text-slate-600">Doanh thu Offline</span>
+                                <span class="font-medium text-slate-800">91.989.000 đ</span>
+                            </div>
+                            <div class="flex justify-between py-2 mt-2 bg-yellow-100/50 rounded px-2 font-bold text-slate-900 border border-yellow-200">
+                                <span>TỔNG DOANH THU</span>
+                                <span class="text-orange-600">139.652.787 đ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tồn Kho & Tỷ lệ Cost -->
+                    <div>
+                        <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-boxes text-slate-400"></i> 2. Biến Động Nguyên Liệu & Tồn Kho</h4>
+                        <div class="bg-white rounded-xl p-4 border border-slate-200 text-sm shadow-sm">
+                            <table class="w-full text-left">
+                                <tbody>
+                                    <tr class="border-b border-slate-100 bg-yellow-50/50">
+                                        <td class="py-2 font-medium">Tồn đầu kỳ (01/07)</td>
+                                        <td class="py-2 text-right font-semibold text-slate-800">34.594.014 đ</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <td class="py-2 text-slate-600">Tổng Nguyên Liệu (NL)</td>
+                                        <td class="py-2 text-right font-medium text-rose-600">67.388.789 đ</td>
+                                    </tr>
+                                    <tr class="bg-yellow-50/50">
+                                        <td class="py-2 font-medium">Tồn cuối kỳ (01/08)</td>
+                                        <td class="py-2 text-right font-semibold text-slate-800">34.218.058 đ</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="mt-4 text-center p-3 bg-rose-50 border border-rose-100 rounded-lg">
+                                <span class="text-slate-700 font-semibold">Tỷ lệ cost Nguyên liệu (%NL):</span>
+                                <span class="text-xl font-bold text-rose-600 ml-2">48,52%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ghi chú Vận hành -->
+                    <div class="space-y-4">
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-sm">
+                            <h4 class="font-semibold text-slate-700 mb-2 flex items-center gap-2"><i class="fas fa-info-circle text-blue-500"></i> 3. Ghi Chú Vận Hành</h4>
+                            <p class="text-xs text-slate-600 mb-1">Gián đoạn thời gian hoạt động để setup quán:</p>
+                            <ul class="list-disc pl-5 text-slate-700 text-xs font-medium">
+                                <li>Ngày 18/07: Đóng cửa hoàn toàn.</li>
+                                <li>Ngày 30/07: Đóng cửa sớm (20h00).</li>
+                                <li>Ngày 31/07: Mở cửa trễ (09h00).</li>
+                            </ul>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-red-50/50 rounded-xl p-3 border border-red-100 text-sm">
+                                <h4 class="font-semibold text-red-800 mb-1 text-xs">Hư Hỏng Nguyên Liệu</h4>
+                                <p class="text-red-600 font-bold mb-1">Khoảng 1.000.000 đ</p>
+                                <p class="text-[10px] text-slate-500 leading-tight">Sốt khoai môn (hết date, chua), Kem dẻo phô mai (hủy), Khúc bạch (chua).</p>
+                            </div>
+                            <div class="bg-purple-50/50 rounded-xl p-3 border border-purple-100 text-sm">
+                                <h4 class="font-semibold text-purple-800 mb-1 text-xs">Thu Hồi Sản Phẩm</h4>
+                                <p class="text-red-600 font-bold mb-1">- 2.867.000 đ</p>
+                                <p class="text-[10px] text-slate-500 leading-tight">Sốt Hershey, Siro lựu, Bột Frap, In bill, Bánh que...</p>
+                            </div>
+                        </div>
+                        <div class="bg-green-50/50 rounded-xl p-4 border border-green-100 text-sm">
+                            <h4 class="font-semibold text-green-800 mb-1">CTKM & Giảm Giá</h4>
+                            <p class="text-xs text-slate-600 mb-1">Đồng giá 10k, Trà sữa 19k, Đổi điểm...</p>
+                            <p class="text-sm font-medium mt-2">Tổng chi phí KM: <strong class="text-red-600">4.863.000 đ</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chi Nhánh: Lê Quang Định -->
+            <section class="glass-card p-6 relative overflow-hidden border-t-4 border-t-green-500 hover:shadow-lg transition-shadow lg:col-span-2 xl:col-span-1 xl:col-start-2">
+                <div class="flex items-center gap-3 mb-6 pb-3 border-b border-slate-100">
+                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><i class="fas fa-map-marker-alt"></i></div>
+                    <h3 class="text-xl font-bold text-slate-800 uppercase">Lê Quang Định</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-6">
+                    <div class="space-y-6">
+                        <!-- Tổng Quan -->
+                        <div>
+                            <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-chart-pie text-slate-400"></i> 1. Tổng Quan Doanh Thu</h4>
+                            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-sm">
+                                <div class="flex justify-between py-2 border-b border-slate-200">
+                                    <span class="text-slate-600">Doanh thu Online (App)</span>
+                                    <span class="font-medium text-slate-800">79.829.790 đ</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-slate-200">
+                                    <span class="text-slate-600">Doanh thu Offline</span>
+                                    <span class="font-medium text-slate-800">28.119.000 đ</span>
+                                </div>
+                                <div class="flex justify-between py-2 mt-2 bg-yellow-100/50 rounded px-2 font-bold text-slate-900 border border-yellow-200">
+                                    <span>TỔNG DOANH THU</span>
+                                    <span class="text-green-700">107.948.790 đ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tồn Kho & Tỷ lệ Cost -->
+                        <div>
+                            <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2"><i class="fas fa-boxes text-slate-400"></i> 2. Biến Động Nguyên Liệu & Tồn Kho</h4>
+                            <div class="bg-white rounded-xl p-4 border border-slate-200 text-sm shadow-sm">
+                                <table class="w-full text-left">
+                                    <tbody>
+                                        <tr class="border-b border-slate-100 bg-yellow-50/50">
+                                            <td class="py-2 font-medium">Tồn đầu kỳ (01/07)</td>
+                                            <td class="py-2 text-right font-semibold text-slate-800">36.349.530 đ</td>
+                                        </tr>
+                                        <tr class="border-b border-slate-100">
+                                            <td class="py-2 text-slate-600">Tổng Nguyên Liệu (NL)</td>
+                                            <td class="py-2 text-right font-medium text-rose-600">64.329.660 đ</td>
+                                        </tr>
+                                        <tr class="bg-yellow-50/50">
+                                            <td class="py-2 font-medium">Tồn cuối kỳ (01/08)</td>
+                                            <td class="py-2 text-right font-semibold text-slate-800">43.949.951 đ</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="mt-4 text-center p-3 bg-rose-50 border border-rose-100 rounded-lg">
+                                    <span class="text-slate-700 font-semibold">Tỷ lệ cost Nguyên liệu (%NL):</span>
+                                    <span class="text-xl font-bold text-rose-600 ml-2">52,5%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Ghi chú Vận hành -->
+                        <div class="bg-orange-50/50 rounded-xl p-4 border border-orange-100 text-sm h-fit">
+                            <h4 class="font-semibold text-orange-800 mb-2 flex items-center gap-2"><i class="fas fa-exclamation-triangle"></i> 3. Hư Hỏng Nguyên Liệu</h4>
+                            <p class="mb-2">Tổng chi phí hao hụt: <strong class="text-red-600">Khoảng 1.000.000 đ</strong></p>
+                            <ul class="list-disc pl-5 text-slate-600 space-y-1 text-xs">
+                                <li><strong>Sốt khoai môn:</strong> Hết date, chua thúi.</li>
+                                <li><strong>Bột cacao:</strong> Hết hạn sử dụng (14/07).</li>
+                                <li><strong>Trái cây/Đào ngâm:</strong> Hư hỏng, sủi bọt (09-11/07).</li>
+                                <li><strong>Trà đào sả:</strong> Date cũ, mùi hôi (10/07).</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-green-50/50 rounded-xl p-4 border border-green-100 text-sm flex flex-col justify-center">
+                                <h4 class="font-semibold text-green-800 mb-1 text-xs">CTKM & Giảm Giá</h4>
+                                <p class="text-xs text-slate-600 mb-1">Đổi điểm voucher.</p>
+                                <p class="text-sm font-medium mt-1">Tổng chi: <strong class="text-red-600">258.000 đ</strong></p>
+                            </div>
+                            <div class="bg-purple-50/50 rounded-xl p-4 border border-purple-100 text-sm flex flex-col justify-center">
+                                <h4 class="font-semibold text-purple-800 mb-1 text-xs">Thu Hồi Sản Phẩm</h4>
+                                <p class="text-xs text-slate-600 mb-1">Bánh que chấm kem.</p>
+                                <p class="text-sm font-medium mt-1">Giảm kho: <strong class="text-red-600">250.000 đ</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div> <!-- END TAB COST -->
+
+</div>
+
+<script>
+    // Plugin đăng ký để Chart.js sử dụng Datalabels
+    Chart.register(ChartDataLabels);
+
+    // --- Xử lý Tab Navigation ---
+    function switchTab(tabId) {
+        const tabOnline = document.getElementById('tabOnline');
+        const tabOffline = document.getElementById('tabOffline');
+        const tabCost = document.getElementById('tabCost'); // Thêm tab Cost
+        
+        const btnOnline = document.getElementById('tabOnlineBtn');
+        const btnOffline = document.getElementById('tabOfflineBtn');
+        const btnCost = document.getElementById('tabCostBtn'); // Thêm nút Cost
+
+        // Hàm helper để reset style nút
+        const resetBtnStyle = (btn) => {
+            btn.className = "px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center gap-2";
+        };
+
+        // Hàm helper để kích hoạt style nút
+        const activeBtnStyle = (btn, colorClass, shadowClass) => {
+            btn.className = `px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 bg-${colorClass} text-white shadow-md shadow-${shadowClass} flex items-center gap-2`;
+        };
+
+        // Ẩn tất cả các tab trước
+        [tabOnline, tabOffline, tabCost].forEach(tab => {
+            tab.classList.add('opacity-0');
+            setTimeout(() => {
+                tab.classList.add('hidden');
+            }, 300);
+        });
+
+        // Reset tất cả các nút
+        [btnOnline, btnOffline, btnCost].forEach(resetBtnStyle);
+
+        // Hiển thị tab và kích hoạt nút tương ứng
+        setTimeout(() => {
+            if (tabId === 'online') {
+                tabOnline.classList.remove('hidden');
+                setTimeout(() => tabOnline.classList.remove('opacity-0'), 50);
+                activeBtnStyle(btnOnline, 'blue-600', 'blue-600/20');
+            } else if (tabId === 'offline') {
+                tabOffline.classList.remove('hidden');
+                setTimeout(() => tabOffline.classList.remove('opacity-0'), 50);
+                activeBtnStyle(btnOffline, 'orange-500', 'orange-500/20');
+            } else if (tabId === 'cost') {
+                tabCost.classList.remove('hidden');
+                setTimeout(() => tabCost.classList.remove('opacity-0'), 50);
+                activeBtnStyle(btnCost, 'rose-600', 'rose-600/20');
+            }
+        }, 300);
+    }
+
+    // --- Xử lý Ẩn/Hiện Biểu Đồ Chi Nhánh ---
+    function toggleChart(wrapperId, btnId) {
+        const wrapper = document.getElementById(wrapperId);
+        const btn = document.getElementById(btnId);
+        const isHidden = wrapper.classList.contains('hidden');
+
+        if (isHidden) {
+            wrapper.classList.remove('hidden');
+            btn.innerHTML = '<i class="fas fa-times"></i> Đóng Biểu Đồ';
+            btn.classList.add('bg-blue-50', 'text-blue-600', 'border-blue-200');
+        } else {
+            wrapper.classList.add('hidden');
+            btn.innerHTML = '<i class="fas fa-chart-area"></i> Xem Biểu Đồ';
+            btn.classList.remove('bg-blue-50', 'text-blue-600', 'border-blue-200');
+        }
+    }
+
+    // --- Dữ Liệu Dùng Chung ---
+    const labels = ['Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7'];
+
+    // Helper tạo Gradient cho Line
+    function createGradient(ctx, colorStart, colorEnd) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, colorStart);
+        gradient.addColorStop(1, colorEnd);
+        return gradient;
+    }
+
+    // Options chung cho tất cả các Line Charts (Animation + Datalabels)
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            duration: 2000,
+            easing: 'easeOutQuart'
+        },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { family: 'Inter', size: 12 } } },
+            tooltip: {
+                backgroundColor: 'rgba(255,255,255,0.9)',
+                titleColor: '#1e293b', bodyColor: '#334155', borderColor: '#e2e8f0', borderWidth: 1, padding: 10,
+                callbacks: { label: (context) => ` ${context.dataset.label}: ${context.parsed.y} Tr` }
+            },
+            datalabels: {
+                display: true,
+                align: 'top',
+                offset: 5,
+                color: '#475569',
+                font: { weight: 'bold', family: 'Inter', size: 11 },
+                formatter: (value) => value // Hiện thẳng con số
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grace: '20%', // Thêm đệm phía trên để số không bị cắt
+                grid: { color: '#f1f5f9', drawBorder: false },
+                border: { dash: [4, 4] }
+            },
+            x: {
+                grid: { display: false }
+            }
+        }
+    };
+
+    // --- 1. Biểu Đồ Tổng Quan ONLINE ---
+    const ctxOverview = document.getElementById('overviewChart').getContext('2d');
+    new Chart(ctxOverview, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: '40 Trường Sa',
+                    data: [99.5, 89.2, 87.9, 98.4],
+                    borderColor: '#3b82f6', // blue
+                    backgroundColor: createGradient(ctxOverview, 'rgba(59, 130, 246, 0.15)', 'rgba(59, 130, 246, 0)'),
+                    fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#fff', borderWidth: 3
+                },
+                {
+                    label: 'Trần Huy Liệu',
+                    data: [47.4, 52.7, 48.9, 47.8],
+                    borderColor: '#f97316', // orange
+                    backgroundColor: createGradient(ctxOverview, 'rgba(249, 115, 22, 0.15)', 'rgba(249, 115, 22, 0)'),
+                    fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#fff', borderWidth: 3
+                },
+                {
+                    label: 'Lê Quang Định',
+                    data: [71.8, 65.9, 78.4, 79.8],
+                    borderColor: '#22c55e', // green
+                    backgroundColor: createGradient(ctxOverview, 'rgba(34, 197, 94, 0.15)', 'rgba(34, 197, 94, 0)'),
+                    fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#fff', borderWidth: 3
+                }
+            ]
+        },
+        options: commonOptions
+    });
+
+    // --- 2. Biểu Đồ Tổng Quan OFFLINE ---
+    const ctxOfflineOverview = document.getElementById('offlineOverviewChart').getContext('2d');
+    new Chart(ctxOfflineOverview, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: '40 Trường Sa',
+                    data: [139.2, 130.4, 118.7, 123.0],
+                    borderColor: '#3b82f6',
+                    backgroundColor: createGradient(ctxOfflineOverview, 'rgba(59, 130, 246, 0.1)', 'rgba(255,255,255,0)'),
+                    fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#fff', borderWidth: 3
+                },
+                {
+                    label: '69 Trần Huy Liệu',
+                    data: [87.6, 91.2, 81.8, 92.0],
+                    borderColor: '#f97316',
+                    backgroundColor: createGradient(ctxOfflineOverview, 'rgba(249, 115, 22, 0.1)', 'rgba(255,255,255,0)'),
+                    fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#fff', borderWidth: 3
+                },
+                {
+                    label: '489 Lê Quang Định',
+                    data: [42.0, 38.7, 32.1, 28.1],
+                    borderColor: '#22c55e',
+                    backgroundColor: createGradient(ctxOfflineOverview, 'rgba(34, 197, 94, 0.1)', 'rgba(255,255,255,0)'),
+                    fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#fff', borderWidth: 3
+                }
+            ]
+        },
+        options: commonOptions
+    });
+
+    // --- Cấu hình cho biểu đồ 4 App của từng chi nhánh ---
+    const getBranchConfig = (ctx, dataShopee, dataGrab, dataBe, dataXanh, dataTotal) => ({
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'ShopeeFood', data: dataShopee, borderColor: '#ea580c', backgroundColor: 'transparent', tension: 0.4, pointRadius: 4, pointBackgroundColor: '#fff', borderWidth: 2 },
+                { label: 'GrabFood', data: dataGrab, borderColor: '#2563eb', backgroundColor: 'transparent', tension: 0.4, pointRadius: 4, pointBackgroundColor: '#fff', borderWidth: 2 },
+                { label: 'BeFood', data: dataBe, borderColor: '#d97706', backgroundColor: 'transparent', tension: 0.4, pointRadius: 4, pointBackgroundColor: '#fff', borderWidth: 2 },
+                { label: 'Xanh SM', data: dataXanh, borderColor: '#0891b2', backgroundColor: 'transparent', tension: 0.4, pointRadius: 4, pointBackgroundColor: '#fff', borderWidth: 2 },
+                { 
+                    label: 'TỔNG ONLINE', data: dataTotal, borderColor: '#0f172a', 
+                    borderDash: [5, 5], backgroundColor: 'transparent', tension: 0.4, pointRadius: 6, 
+                    pointBackgroundColor: '#0f172a', borderWidth: 3,
+                    datalabels: { color: '#0f172a', font: { weight: '900', size: 12 } } // Highlight tổng
+                }
+            ]
+        },
+        options: {
+            ...commonOptions,
+            plugins: {
+                ...commonOptions.plugins,
+                // Chỉ hiện số của đường Tổng Online để đỡ rối mắt
+                datalabels: {
+                    display: function(context) {
+                        return context.dataset.label === 'TỔNG ONLINE';
+                    },
+                    align: 'top',
+                    offset: 5,
+                    font: { weight: 'bold', family: 'Inter' }
+                }
+            }
+        }
+    });
+
+    // Biểu đồ Trường Sa
+    const ctxTruongSa = document.getElementById('truongSaChart').getContext('2d');
+    new Chart(ctxTruongSa, getBranchConfig(ctxTruongSa, [32.3, 30.4, 31.3, 30.6], [51.6, 42.1, 41.4, 49.1], [13.2, 11.5, 8.7, 11.7], [2.3, 5.3, 6.5, 7.4], [99.5, 89.2, 87.9, 98.4]));
+
+    // Biểu đồ Trần Huy Liệu
+    const ctxTHL = document.getElementById('thlChart').getContext('2d');
+    new Chart(ctxTHL, getBranchConfig(ctxTHL, [20.9, 30.6, 25.7, 24.5], [19.7, 15.5, 15.3, 15.0], [4.3, 4.1, 3.8, 4.4], [2.4, 2.5, 4.0, 4.1], [47.4, 52.7, 48.9, 48.1]));
+
+    // Biểu đồ Lê Quang Định
+    const ctxLQD = document.getElementById('lqdChart').getContext('2d');
+    new Chart(ctxLQD, getBranchConfig(ctxLQD, [24.9, 26.3, 23.9, 22.1], [40.4, 33.3, 46.9, 50.2], [4.6, 3.0, 3.5, 4.0], [2.0, 3.2, 4.2, 3.6], [71.8, 65.9, 78.4, 79.9]));
+
+</script>
+</body>
+</html>
